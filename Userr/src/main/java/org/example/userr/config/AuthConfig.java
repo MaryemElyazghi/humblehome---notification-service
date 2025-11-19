@@ -58,7 +58,9 @@ public class AuthConfig {
                         // Le Gateway gère l'authentification pour les endpoints sécurisés
                         .requestMatchers("/authh/controller/**").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .httpBasic(httpBasic -> httpBasic.disable()) // désactive httpBasic
+                .formLogin(formLogin -> formLogin.disable()); // désactive formLogin
 
         return http.build();
     }

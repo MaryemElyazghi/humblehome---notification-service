@@ -22,10 +22,24 @@ spring:
           filters:
             - name: AuthenticationFilter
 
+        - id: product-images-service
+          uri: lb://product-service
+          predicates:
+            - Path=/images/**
+          filters:
+            - name: AuthenticationFilter
+
         - id: cart-service
-          uri: http://localhost:8084
+          uri: lb://CART
           predicates:
             - Path=/cart/**
+          filters:
+            - name: AuthenticationFilter
+
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order/**
           filters:
             - name: AuthenticationFilter
 

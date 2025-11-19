@@ -23,11 +23,12 @@ public class OrderService {
     @Autowired
     private ProductClient productClient;
 
-    public OrderDTO createOrder(List<OrderItemDTO> items) {
+    public OrderDTO createOrder(List<OrderItemDTO> items, Long userId) {
 
         Order order = new Order();
         order.setOrderDate(new Date());
         order.setOrderStatus("PENDING");
+        order.setUserId(userId);
 
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -60,6 +61,13 @@ public class OrderService {
         return toDTO(order);
     }
 
+    public List<OrderDTO> getOrdersByUserId(Long userId) {
+        List<Order> orders = orderRepo.findByUserId(userId);
+        return orders.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
 
     private OrderDTO toDTO(Order order) {
 
@@ -68,6 +76,7 @@ public class OrderService {
         dto.setOrderDate(order.getOrderDate());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setOrderStatus(order.getOrderStatus());
+        dto.setUserId(order.getUserId());
 
         dto.setItems(
                 order.getItems().stream().map(i -> {

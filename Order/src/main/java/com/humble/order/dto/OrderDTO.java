@@ -11,6 +11,7 @@ public class OrderDTO {
     private Date orderDate;
     private Float totalAmount;
     private String orderStatus;
+    private Long userId;
 
     private List<OrderItemDTO> items;
 }

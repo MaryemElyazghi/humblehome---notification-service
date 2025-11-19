@@ -25,6 +25,9 @@ public class Order {
 
     private String orderStatus;
 
+    // Au lieu de stocker l'entité User
+    private Long userId;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
