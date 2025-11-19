@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, catchError, map, of } from 'rxjs';
+import { API_CONFIG } from '../config/api.config';
 
 export interface Product {
   id: number;
@@ -45,6 +47,178 @@ export class ProductService {
   public selectedProduct$ = this.selectedProductSubject.asObservable();
   
   private recentlyViewedProducts: Product[] = [];
+  
+  // Flag pour utiliser l'API ou les données mockées
+  private useApi = false; // TODO: Le développeur devra activer cette option
+  
+  constructor(private http: HttpClient) {
+    this.loadRecentlyViewedFromStorage();
+  }
+
+  /**
+   * Récupérer tous les produits depuis l'API
+   * 
+   * TODO: Le développeur devra mapper les données du backend vers l'interface Product
+   */
+  getAllProductsFromApi(): Observable<Product[]> {
+    if (!this.useApi) {
+      return of(this.getAllProducts()); // Fallback sur les données mockées
+    }
+
+    return this.http.get<any[]>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS.ALL}`).pipe(
+      map(products => {
+        // TODO: Mapper les produits du backend vers l'interface Product
+        // return products.map(p => this.mapBackendProductToFrontend(p));
+        return this.getAllProducts(); // Temporaire
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des produits:', error);
+        return of(this.getAllProducts()); // Fallback sur les données mockées
+      })
+    );
+  }
+
+  /**
+   * Récupérer un produit par ID depuis l'API
+   * 
+   * TODO: Le développeur devra mapper les données du backend vers l'interface Product
+   */
+  getProductByIdFromApi(id: number): Observable<Product | undefined> {
+    if (!this.useApi) {
+      return of(this.getProductById(id)); // Fallback sur les données mockées
+    }
+
+    return this.http.get<any>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(id)}`).pipe(
+      map(product => {
+        // TODO: Mapper le produit du backend vers l'interface Product
+        // return this.mapBackendProductToFrontend(product);
+        return this.getProductById(id); // Temporaire
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération du produit:', error);
+        return of(this.getProductById(id)); // Fallback sur les données mockées
+      })
+    );
+  }
+
+  /**
+   * Créer un nouveau produit
+   * 
+   * TODO: Le développeur devra mapper l'interface Product vers le format backend
+   */
+  createProduct(product: any): Observable<any> {
+    if (!this.useApi) {
+      return of({ success: true, id: Date.now() }); // Simulation
+    }
+
+    // TODO: Mapper le produit frontend vers le format backend
+    const backendProduct = {
+      name: product.name,
+      brand: product.brand || '',
+      price: product.price,
+      inventory: product.inventory || 0,
+      description: product.description || '',
+      category: product.category || ''
+    };
+
+    return this.http.post<any>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS.BASE}`, backendProduct).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la création du produit:', error);
+        return of({ success: false, error });
+      })
+    );
+  }
+
+  /**
+   * Mettre à jour un produit
+   * 
+   * TODO: Le développeur devra mapper l'interface Product vers le format backend
+   */
+  updateProduct(id: number, product: any): Observable<any> {
+    if (!this.useApi) {
+      return of({ success: true }); // Simulation
+    }
+
+    // TODO: Mapper le produit frontend vers le format backend
+    const backendProduct = {
+      name: product.name,
+      brand: product.brand || '',
+      price: product.price,
+      inventory: product.inventory || 0,
+      description: product.description || '',
+      category: product.category || ''
+    };
+
+    return this.http.put<any>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(id)}`, backendProduct).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la mise à jour du produit:', error);
+        return of({ success: false, error });
+      })
+    );
+  }
+
+  /**
+   * Supprimer un produit
+   */
+  deleteProduct(id: number): Observable<any> {
+    if (!this.useApi) {
+      return of({ success: true }); // Simulation
+    }
+
+    return this.http.delete(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(id)}`).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la suppression du produit:', error);
+        return of({ success: false, error });
+      })
+    );
+  }
+
+  /**
+   * Uploader une image pour un produit
+   */
+  uploadProductImage(productId: number, file: File): Observable<any> {
+    if (!this.useApi) {
+      return of({ success: true }); // Simulation
+    }
+
+    const formData = new FormData();
+    formData.append('productId', productId.toString());
+    formData.append('file', file);
+
+    return this.http.post<any>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.IMAGES.BASE}`, formData).pipe(
+      catchError(error => {
+        console.error('Erreur lors de l\'upload de l\'image:', error);
+        return of({ success: false, error });
+      })
+    );
+  }
+
+  /**
+   * Récupérer les images d'un produit
+   */
+  getProductImages(productId: number): Observable<any[]> {
+    if (!this.useApi) {
+      return of([]); // Simulation
+    }
+
+    return this.http.get<any[]>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.IMAGES.BY_PRODUCT_ID(productId)}`).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la récupération des images:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Obtenir l'URL de téléchargement d'une image
+   */
+  getImageUrl(fileName: string): string {
+    if (!this.useApi) {
+      return ''; // Pas d'image en mode mock
+    }
+    return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.IMAGES.DOWNLOAD(fileName)}`;
+  }
+
   private mockProducts: Product[] = [
     // Sacs & Housses
     { 
@@ -731,6 +905,18 @@ export class ProductService {
       this.recentlyViewedProducts = JSON.parse(stored);
     }
     return this.recentlyViewedProducts;
+  }
+
+  private loadRecentlyViewedFromStorage(): void {
+    const stored = localStorage.getItem('recentlyViewedProducts');
+    if (stored) {
+      try {
+        this.recentlyViewedProducts = JSON.parse(stored);
+      } catch (error) {
+        console.error('Erreur lors du chargement des produits récemment consultés:', error);
+        this.recentlyViewedProducts = [];
+      }
+    }
   }
 
   // Méthode pour calculer l'économie réalisée

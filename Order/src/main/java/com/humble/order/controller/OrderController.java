@@ -2,6 +2,7 @@ package com.humble.order.controller;
 
 import com.humble.order.dto.OrderDTO;
 import com.humble.order.dto.OrderItemDTO;
+import com.humble.order.dto.TotalAmountDTO;
 import com.humble.order.feign.UserClient;
 import com.humble.order.model.Utilisateur;
 import com.humble.order.service.OrderService;
@@ -80,6 +81,33 @@ public class OrderController {
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Orders not found");
+        }
+    }
+
+    @GetMapping("/my-orders/total")
+    public ResponseEntity<Object> getMyOrdersTotal(HttpServletRequest request) {
+        try {
+            // 🔵 récupérer username du header envoyé par le Gateway
+            String username = request.getHeader("longInUser");
+
+            if (username == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Missing username in headers");
+            }
+
+            // 🔵 appel du microservice utilisateur via Feign
+            Utilisateur user = userClient.getUserByUsername(username);
+
+            // Ici tu récupères l'ID du user depuis le MS User :
+            Long userId = (long) user.getId();
+
+            Float totalAmount = service.getTotalAmountByUserId(userId);
+            
+            TotalAmountDTO response = new TotalAmountDTO(totalAmount);
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error calculating total: " + e.getMessage());
         }
     }
 }

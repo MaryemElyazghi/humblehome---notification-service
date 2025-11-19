@@ -35,28 +35,55 @@ export class LoginComponent {
     }
 
     this.isLoading = true;
-
-    // Simuler un délai d'authentification
-    setTimeout(() => {
-      this.performLogin();
-    }, 1000);
+    
+    // Appeler directement performLogin (le délai est déjà dans login())
+    this.performLogin();
   }
 
-  private performLogin() {
+  private async performLogin() {
     const email = this.loginForm.email.toLowerCase().trim();
+    const password = this.loginForm.password;
     
-    // Vérifier si c'est l'admin (email spécifique)
-    if (email === 'admin@humblehome.com' || email === 'admin@example.com') {
-      // Connexion en tant qu'admin
-      this.authService.loginAsAdmin();
-      this.router.navigate(['/admin']);
-    } else {
-      // Connexion en tant qu'utilisateur normal
-      this.authService.loginAsUser();
-      this.router.navigate(['/user']);
+    try {
+      // TODO: Le développeur devra implémenter l'appel API réel
+      // Appeler l'API backend pour obtenir le token
+      const success = await this.authService.login(email, password);
+      
+      if (success) {
+        // Attendre un peu pour s'assurer que les rôles sont bien définis
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Récupérer les rôles de l'utilisateur
+        const roles = this.authService.getCurrentRoles();
+        const isAdmin = roles.includes('ROLE_ADMIN') || this.isAdminEmail(email);
+        
+        console.log('Login successful. Roles:', roles, 'Is Admin:', isAdmin);
+        
+        // Rediriger selon le rôle
+        if (isAdmin) {
+          this.router.navigate(['/admin']).then(() => {
+            console.log('Redirection vers /admin réussie');
+          }).catch(err => {
+            console.error('Erreur de redirection vers /admin:', err);
+            this.errorMessage = 'Erreur de redirection';
+          });
+        } else {
+          this.router.navigate(['/user']).then(() => {
+            console.log('Redirection vers /user réussie');
+          }).catch(err => {
+            console.error('Erreur de redirection vers /user:', err);
+            this.errorMessage = 'Erreur de redirection';
+          });
+        }
+      } else {
+        this.errorMessage = 'Email ou mot de passe incorrect';
+      }
+    } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
+      this.errorMessage = 'Erreur de connexion. Veuillez réessayer.';
+    } finally {
+      this.isLoading = false;
     }
-
-    this.isLoading = false;
   }
 
   // Helper pour déterminer si l'email est celui de l'admin

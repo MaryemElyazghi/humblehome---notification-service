@@ -68,6 +68,16 @@ public class OrderService {
                 .toList();
     }
 
+    /**
+     * Calculer le total final de toutes les commandes d'un utilisateur
+     */
+    public Float getTotalAmountByUserId(Long userId) {
+        List<Order> orders = orderRepo.findByUserId(userId);
+        return orders.stream()
+                .map(order -> order.getTotalAmount() != null ? order.getTotalAmount() : 0.0f)
+                .reduce(0.0f, Float::sum);
+    }
+
 
     private OrderDTO toDTO(Order order) {
 
