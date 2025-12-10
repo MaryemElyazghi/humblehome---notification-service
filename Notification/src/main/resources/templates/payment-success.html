@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .checkmark {
+            font-size: 64px;
+            margin: 20px 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .payment-details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .button {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="checkmark">✅</div>
+        <h1>Payment Successful!</h1>
+    </div>
+
+    <div class="content">
+        <h2>Thank you, <span th:text="${userName}"></span>!</h2>
+        <p>Your payment has been processed successfully.</p>
+
+        <div class="payment-details">
+            <h3>Payment Details</h3>
+            <div class="detail-row">
+                <span>Transaction ID:</span>
+                <strong th:text="${transactionId}"></strong>
+            </div>
+            <div class="detail-row">
+                <span>Order Number:</span>
+                <strong th:text="${orderId}"></strong>
+            </div>
+            <div class="detail-row">
+                <span>Payment Method:</span>
+                <strong th:text="${paymentMethod}"></strong>
+            </div>
+            <div class="detail-row">
+                <span>Payment Date:</span>
+                <strong th:text="${paymentDate}"></strong>
+            </div>
+            <div class="detail-row">
+                <span>Amount Paid:</span>
+                <strong>$<span th:text="${amount}"></span></strong>
+            </div>
+        </div>
+
+        <center>
+            <a href="http://localhost:3000/orders" class="button">View Order</a>
+        </center>
+
+        <p style="margin-top: 30px; color: #666;">
+            A receipt has been sent to your email.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>© 2024 HumbleHome. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

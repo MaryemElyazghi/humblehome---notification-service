@@ -2,9 +2,11 @@ package org.example.userr.service;
 
 
 import org.example.userr.entity.UserCredential;
+import org.example.userr.event.UserRegisteredEvent;  // ✅ NOUVEAU
 import org.example.userr.feign.CartClient;
 import org.example.userr.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;  // ✅ NOUVEAU
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,8 @@ public class AuthService {
     @Autowired
     private CartClient cartClient;
 
-
+    @Autowired  // ✅ NOUVEAU
+    private ApplicationEventPublisher eventPublisher;
 //
 //    public String saveUser(UserCredential userCredential) {
 //        // Encoder le mot de passe
@@ -64,6 +67,9 @@ public class AuthService {
 
         // 🔹 Créer automatiquement le panier pour l'utilisateur
         cartClient.createCartForUser(userCredential.getId());
+
+        // ✅ PUBLIER L'ÉVÉNEMENT
+        eventPublisher.publishEvent(new UserRegisteredEvent(this, userRepository.save(userCredential)));
 
         return "User added and cart created";
     }
