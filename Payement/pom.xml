@@ -6,30 +6,19 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>org.example</groupId>
     <artifactId>Payement</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Payement</name>
-    <description>Payement</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <description>Payment Service</description>
+
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,6 +41,18 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
+        <!-- ✅ ADDED: Jackson for JSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- ✅ ADDED: RestTemplate with Load Balancing -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -68,6 +69,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

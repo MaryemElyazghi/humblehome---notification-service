@@ -1,6 +1,7 @@
 package org.example.payement.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -45,7 +46,8 @@ public class PaymentNotificationService {
     }
 }
 
-// DTO Helper
+// ✅ FIXED: Complete DTO with proper Lombok annotations
+@Data
 class PaymentDetails {
     private Long userId;
     private String userName;
@@ -54,6 +56,4 @@ class PaymentDetails {
     private Long orderId;
     private String method;
     private Double amount;
-
-    // Getters/Setters
 }

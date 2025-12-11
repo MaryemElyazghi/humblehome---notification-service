@@ -15,4 +15,3 @@ public class NotificationRequest {
     private String metadata; // JSON string
     private boolean isWebNotification;
 }
-
