@@ -22,13 +22,23 @@ public class NotificationService {
             case ORDER_CONFIRMATION:
                 emailService.sendOrderConfirmation(request);
                 break;
-            case PAYMENT_SUCCESS:  // ✅ NOUVEAU
+            case PAYMENT_SUCCESS:
                 emailService.sendPaymentSuccess(request);
                 break;
             case LOW_STOCK_ALERT:
                 emailService.sendLowStockAlert(request);
                 break;
         }
+    }
+
+    // ✅ FIXED: Added missing method
+    public List<Notification> getUserNotifications(Long userId) {
+        return notificationRepository.findByUserId(userId);
+    }
+
+    // ✅ FIXED: Added missing method
+    public List<Notification> getUserWebNotifications(Long userId) {
+        return notificationRepository.findByUserIdAndIsWebNotificationTrue(userId);
     }
 
     public List<Notification> getUnreadNotifications(Long userId) {

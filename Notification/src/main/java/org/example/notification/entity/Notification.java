@@ -1,4 +1,3 @@
-
 package org.example.notification.entity;
 
 import jakarta.persistence.*;
@@ -47,9 +46,8 @@ public class Notification {
     private String errorMessage;
 
     @Column(columnDefinition = "TEXT")
-    private String metadata; // JSON data
+    private String metadata;
 
-    // Flag for web notification
     @Column(nullable = false)
     private boolean isWebNotification = false;
 
@@ -64,9 +62,12 @@ public class Notification {
         }
     }
 
-    public void setIsWebNotification(boolean b) {
+    // ✅ FIXED: Proper setter methods
+    public void setWebNotification(boolean isWebNotification) {
+        this.isWebNotification = isWebNotification;
     }
 
-    public void setWebNotification(boolean b) {
+    public void setRead(boolean isRead) {
+        this.isRead = isRead;
     }
 }
